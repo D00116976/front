@@ -1,0 +1,7 @@
+<chart [options]="options" (selection)="onChartSelection($event)">
+	<series (mouseOver)="onSeriesMouseOver($event)">
+		<point (click)="onPointSelect($event)"></point>
+    </series>
+</chart>
+
+<p><b>{{serieName}}</b> is hovered<p>

@@ -1,0 +1,163 @@
+<ng-container *ngIf="currentProject.owner">
+<h3>Edit Project - {{currentProject.title}}</h3>
+<form name="form" (ngSubmit)="add()"  #f="ngForm">
+
+    <div class="row">
+        <div class="col-md-3">
+            <label for="lastUpdated">Last Updated </label>
+            <input ng-readonly type="text" name="lastUpdated" id="lastUpdated" class="form-control" 
+               [(ngModel)]="currentProject.lastUpdated" placeholder="lastUpdated" #lastUpdated="ngModel" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group" >
+                <label for="owner">Owner {{currentProject.owner.name}}</label>
+                <select name="owner" id="owner" class="form-control" required  [(ngModel)]="currentProject.owner" #owner="ngModel">
+                    <option *ngFor="let u of users" [ngValue]="u">{{u.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group" >
+                <label for="projectCode">Project Code</label>
+                <input type="text" name="projectCode" id="projectCode" class="form-control"  required [(ngModel)]="currentProject.projectCode" placeholder="projectCode" #projectCode="ngModel" />
+                <div *ngIf="projectCode.errors && (projectCode.dirty || projectCode.touched)" class="alert alert-danger">
+                    <div [hidden]="!projectCode.errors.required">
+                        Project Code is required
+                    </div>
+                </div>
+            </div> 
+        </div>
+        <div class="col-md-5">
+            <div class="form-group" >
+                <label for="title">Project Title</label>
+                <input type="text" name="title" id="title" class="form-control"  required [(ngModel)]="currentProject.title" placeholder="title" #title="ngModel" />
+                <div *ngIf="title.errors && (title.dirty || title.touched)" class="alert alert-danger">
+                    <div [hidden]="!title.errors.required">
+                        Project Title is required
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>  
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group" >
+                <label for="description">Project Description</label>
+                <input type="text" name="description" id="description" class="form-control"  [(ngModel)]="currentProject.description" placeholder="description" #description="ngModel" />
+                <div *ngIf="description.errors && (description.dirty || description.touched)" class="alert alert-danger">
+                    <div [hidden]="!description.errors.required">
+                        Project Description is required
+                    </div>
+                </div>
+            </div> 
+        </div>  
+        <div class="col-md-3">
+            <div class="form-group" >
+                <label for="status">Status</label>
+                <select  name="status" id="status" class="form-control" required  [(ngModel)]="currentProject.status" #status="ngModel">
+                    <option *ngFor="let s of allStatus" [ngValue]="s">{{s.name}}</option>
+                </select>
+            </div> 
+        </div> 
+    </div> 
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group" >
+                <label for="customer">Customer</label>
+                <select name="customer" id="customer" class="form-control" required  [(ngModel)]="currentProject.customer" #customer="ngModel">
+                    <option *ngFor="let u of users" [ngValue]="u">{{u.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group" >
+                <label for="customerContact">Customer Contact</label>
+                <select name="customerContact" id="customerContact" class="form-control" required  [(ngModel)]="currentProject.customerContact" #customerContact="ngModel">
+                    <option *ngFor="let u of users" [ngValue]="u">{{u.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group" >
+                <label for="allowExpenses">Allow Expenses</label>
+                <input type="checkbox" name="allowExpenses"  [(ngModel)]="currentProject.allowExpenses" #allowExpenses="ngModel">
+            </div>  
+        </div> 
+    </div> 
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group" >
+                <label for="comment">Comment</label>
+                <input type="text" name="comment" id="comment" class="form-control"  [(ngModel)]="currentProject.comment" placeholder="comment" #comment="ngModel" />
+            </div> 
+        </div> 
+    </div> 
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group" >
+                <label for="currency">Select Currency</label>
+                <select (ngModelChange)="currencyMapping($event)" multiple name="currency" id="currency" class="form-control" required  [(ngModel)]="currentProject.currency" #currency="ngModel">
+                    <option *ngFor="let c of currencyArray" [ngValue]="c">{{c.code}}</option>
+                </select>
+            </div> 
+        </div> 
+        
+        <ng-container *ngIf="currentProject.currencyConverter.currencyMaps">
+            <div class="col-md-5">
+                <label for="currencyConverter">Exchange Rate *</label>
+                <table class="table table-striped" cellspacing="0" cellpadding="0">
+                    <thead>
+                        <tr>
+                            <th>from</th>
+                            <th>to</th>
+                            <th>Exchange Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let m of currentProject.currencyConverter.currencyMaps" >
+                            <td>{{m.currencyFrom.code}}</td>
+                            <td>{{m.currencyTo.code}}</td>
+                            <td *ngIf="!m.editable">{{m.rate}}</td>
+                            <td *ngIf="m.editable">
+                                <input (keyup)="calcuateRate(m)" (mouseup)="calcuateRate(m)" type="number" name="rate" class="form-control" [(ngModel)]="m.rate" #rate="ngModel"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </ng-container>  
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group" >
+                <label for="selectedLanguages">Select Languages</label>
+                <select  multiple name="languages" id="languages" class="form-control" required  [(ngModel)]="currentProject.languages" #selectedLanguages="ngModel">
+                    <!--<option *ngFor="let l of languages|filterSelectedLanguages:true" [ngValue]="l">{{l.displayValue}}</option>-->
+                     <option *ngFor="let l of languages" [ngValue]="l">{{l.displayValue}}</option>
+                </select>
+            </div> 
+
+            <ng-container *ngIf="currentProject.languages">
+                <label for="getSelectedLanguages">Selected Languages *</label>
+                <p *ngFor="let l of currentProject.languages">{{l.displayValue}} </p>
+            </ng-container>
+             
+        </div> 
+    </div> 
+    <button type="submit" class="btn btn-default" [disabled]="!f.form.valid">
+        <i class="fa-lg fa fa-plus-square" aria-hidden="true"></i>
+    </button>
+</form>
+</ng-container>
+
+<button type="button" class="btn btn-warning" (click)="debug()">
+       DEBUG
+    </button>
+

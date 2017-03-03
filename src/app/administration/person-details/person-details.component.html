@@ -1,0 +1,152 @@
+<ng-container *ngIf="userWrapper">
+	<div class="row">
+		<div class="col-md-6 col-lg-8">
+			<h4 class="page-header">{{userWrapper.person.forename}} {{userWrapper.person.givenName}} (#{{userWrapper.user.id}})</h4>
+			<form name="form" (ngSubmit)="update(); markAsPristine()"  #f="ngForm">
+				<div class="row">
+					<div class="col-md-3 col-sm-3 col-xs-6">
+						<div class="form-group" >
+							<label for="uType">User Type</label>
+							<select name="uType" id="uType" class="form-control" required  [(ngModel)]="userWrapper.user.userType" placeholder="userType" #useType="ngModel">
+								<option *ngFor="let u of userTypes" [ngValue]="u">{{u.description}}</option>
+							</select>
+							<div *ngIf="useType.errors && (useType.dirty || useType.touched)" class="alert alert-danger">
+								<div [hidden]="!useType.errors.required">
+									User Type is required
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-3 col-xs-6">
+						<div class="form-group" >
+							<label for="fore">First Name</label>
+							<input type="text" name="fore" id="fore" class="form-control" required minlength="4" maxlength="24" [(ngModel)]="userWrapper.person.forename" placeholder="first name" #fore="ngModel" />
+							<div *ngIf="fore.errors && (fore.dirty || fore.touched)" class="alert alert-danger">
+								<div [hidden]="!fore.errors.required">
+									Forename is required
+								</div>
+								<div [hidden]="!fore.errors.minlength">
+									Forename must be at least 4 characters long.
+								</div>
+								<div [hidden]="!fore.errors.maxlength">
+									Forename cannot be more than 24 characters long.
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-3 col-xs-6">
+						<div class="form-group">
+							<label for="family">Family Name</label>
+							<input type="text" name="family" id="family" class="form-control" required minlength="4" maxlength="24" [(ngModel)]="userWrapper.person.givenName" placeholder="family name" #family="ngModel" />
+							<div *ngIf="family.errors && (family.dirty || family.touched)" class="alert alert-danger">
+								<div [hidden]="!family.errors.required">
+									Family Name is required
+								</div>
+								<div [hidden]="!family.errors.minlength">
+									Family Name must be at least 4 characters long.
+								</div>
+								<div [hidden]="!family.errors.maxlength">
+									Family Name cannot be more than 24 characters long.
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-3 col-xs-6">
+						<div class="form-group">
+							<label for="user">Username</label>
+							<input type="text" name="user" id="user" class="form-control" required minlength="4" maxlength="24" [(ngModel)]="userWrapper.person.userName" placeholder="username" #user="ngModel" />
+							<div *ngIf="userWrapper.errors && (userWrapper.dirty || userWrapper.touched)" class="alert alert-danger">
+								<div [hidden]="!userWrapper.errors.required">
+									Username is required
+								</div>
+								<div [hidden]="!userWrapper.errors.minlength">
+									Username must be at least 4 characters long.
+								</div>
+								<div [hidden]="!userWrapper.errors.maxlength">
+									Username cannot be more than 24 characters long.
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group" >
+							<label for="pass">Password</label>
+							<input disabled type="password" name="pass" id="pass" class="form-control" required minlength="4" maxlength="24" validateEqual="passConf" reverse="true" [(ngModel)]="userWrapper.person.userPassword" placeholder="password" #pass="ngModel" />
+							<div *ngIf="pass.errors && (pass.dirty || pass.touched)" class="alert alert-danger">
+								<div [hidden]="!pass.errors.required">
+									Password is required
+								</div>
+								<div [hidden]="!pass.errors.minlength">
+									Password must be at least 4 characters long.
+								</div>
+								<div [hidden]="!pass.errors.maxlength">
+									Password cannot be more than 24 characters long.
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group" >
+							<label for="passConf">Confirm Password</label>
+							<input type="password" name="passConf" id="passConf" class="form-control" required validateEqual="pass" [(ngModel)]="userWrapper.person.passwordConfirm" placeholder="password" #passConf="ngModel" />
+							<div *ngIf="passConf.errors && (passConf.dirty || pass.touched)" class="alert alert-danger">
+								<div [hidden]="passConf.valid ||  (passConf.pristine && !f.submitted)">
+									Password Mismatch
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-3 col-sm-4">
+						<div class="form-group">
+							<label for="job">Job Title</label>
+							<input type="text" name="job" id="job" class="form-control" [(ngModel)]="userWrapper.person.jobTitle" placeholder="job title" #job="ngModel" />
+						</div>
+					</div>
+					<div class="col-md-5 col-sm-4">
+						<div class="form-group" >
+							<label for="company">Company</label>
+							<select (ngModelChange)="setDept($event)" id="company" class="form-control" name="company" [(ngModel)]="userWrapper.person.company"  required #company="ngModel" >
+								<option *ngFor="let c of companies" [value]="c.name">{{c.name}}</option>
+							</select>
+							<div *ngIf="company.errors && (company.dirty || company.touched)" class="alert alert-danger">
+								<div [hidden]="!company.errors.required">
+									Company is required
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4 col-sm-4">
+						<div class="form-group">
+							<label for="department">Department</label>
+							<select id="department" class="form-control" name="department" [(ngModel)]="userWrapper.person.department" #department="ngModel">
+								<option *ngFor="let d of dept" [value]="d">{{d}}</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="form-group">
+							<label for="comment">Comment</label>
+							<textarea type="text" name="comment" id="comment" class="form-control" [(ngModel)]="userWrapper.person.comment" placeholder="comment" #comment="ngModel"></textarea>
+						</div>
+					</div>
+				</div>
+				<button type="submit" class="btn btn-default" [disabled]="!f.form.valid">
+					<i class="fa-lg fa fa-cloud-upload" aria-hidden="true"></i>
+				</button>
+			</form>
+		</div>
+		<div class="col-md-3 col-lg-2">
+			<h4 class="page-header">Services Supplied</h4>
+		</div>
+		<div class="col-md-3 col-lg-2">
+			<h4 class="page-header">Roles</h4>
+			<app-roles></app-roles>
+		</div>
+	</div>
+</ng-container>

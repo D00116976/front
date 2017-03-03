@@ -1,0 +1,32 @@
+
+<div class="col-md-6">
+  <div *ngIf="chartTypePicker" style="margin-bottom: 10px">
+  <table style="width:100%; text-align: center;">
+      <tr>
+        <td>
+         <input (click)="legendToggle()" type="checkbox" value="Legend Toggle" name="Legend Toggle">Legend Toggle<br>
+       </td>
+       <td>
+        <input (click)="chartType='line'" type="radio" value="line" name="chart" >Line Chart<br>
+      </td>
+      <td>
+        <input (click)="chartType='bar'" type="radio" value="bar" name="chart" checked>Bar Chart<br>
+      </td>
+      <td>
+        <input (click)="chartType='pie'" type="radio" value="pie" name="chart" >Pie Chart<br>
+      </td>
+    </tr>
+  </table>
+</div>
+<div style="display: block;">
+<canvas baseChart width="600" height="400"
+  [datasets]="chartData"
+  [labels]="chartLabels"
+  [options]="chartOptions"
+  [legend]="chartLegend"
+  [chartType]="chartType"
+  (chartHover)="chartHovered($event)"
+  (chartClick)="chartClicked($event)">
+</canvas>
+</div>
+</div>

@@ -1,0 +1,303 @@
+<template [ngIf]="personPage != null">
+    <h3 class="page-header">Manage Users</h3>
+
+    <div class="row">
+        <div class="col-lg-3 col-xs-12">
+            <div class="col-lg-4 col-md-1 col-sm-2 col-xs-3">
+                <label for="rowCount">Users</label>
+                <input id="rowCount" class="form-control" type="text" (keyup)="fetchPage(0, pageListSize, null)" [(ngModel)]="pageListSize"  placeholder="Row Count" />
+            </div>
+            <div class="col-lg-8 col-md-6 col-sm-4 col-xs-9">
+                <label for="search">Search</label>
+                <input id="search" class="form-control" type="text" placeholder="enter name" [(ngModel)]="term"/>
+            </div>
+            <div class="col-lg-4 col-md-2 col-sm-3 col-xs-6">
+                <label for="filterU">User Type</label>
+                <select id="fiterU" class="form-control"  [(ngModel)]="filterUser">
+                    <option value="All" selected="selected">All Types</option>
+                    <option *ngFor="let u of userTypes" [ngValue]="u.description">{{u.description}}</option>
+                </select>
+            </div>
+            <div class="col-lg-8 col-md-3 col-sm-3 col-xs-6">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <button class="full-width btn btn-danger btn-xs" (click)="deleteAll()">
+                            Delete All <i class="fa-lg fa fa-trash-o" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="col-xs-6">
+                        <button *ngIf="isReordered==true" class="full-width btn btn-success btn-xs" (click)="fetchPage(0, pageListSize, null); updateCharts(); isReordered='false'">
+                            Refresh <i class="fa-lg fa fa-refresh" aria-hidden="true"></i>
+                        </button>
+                        <button (click)="toggleEditable(false)" *ngIf="editable==true" class="full-width btn btn-success btn-xs">
+                            Close <i class="fa-lg fa fa-ban" aria-hidden="true"></i>
+                        </button>
+                        <button class="full-width btn btn-warning btn-xs" *ngIf="isChanged" data-toggle="modal" data-target="#update-modal" (click)="checkForUpdate()">
+                            Update <i class="fa-lg fa fa-cloud-upload" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-9 col-xs-12">
+            <div id="list" class="row">
+                <div class="table-responsive col-md-12">
+                    <table class="table table-striped" cellspacing="0" cellpadding="0">
+                        <thead>
+                            <tr [ngSwitch]="editable" >
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Username
+                                </th>
+                                <th>
+                                    User Type
+                                </th>
+                                <th>
+                                    Comp. Name
+                                </th>
+                                <th>
+                                    Vat No.
+                                </th>
+                                <th>
+                                    Dept.
+                                </th>
+                                <th>
+                                    Forename
+                                </th>
+                                <th>
+                                    Surname
+                                </th>
+                                <th>
+                                    Job Title
+                                </th>
+                        <!-- <th><app-table-sort (click)="updateCharts(); isReordered=true" [table]="self" [page]="personPage" [label]="'Username'" [property]="'authUser.username'" ></app-table-sort></th>
+                        <th><app-table-sort (click)="updateCharts(); isReordered=true" [table]="self" [page]="personPage" [label]="'Type'" [property]="'userType'" ></app-table-sort></th>
+                        <th><app-table-sort (click)="updateCharts(); isReordered=true" [table]="self" [page]="personPage" [label]="'Forename'" [property]="'forename'" ></app-table-sort></th>
+                        <th><app-table-sort (click)="updateCharts(); isReordered=true" [table]="self" [page]="personPage" [label]="'Family Name'" [property]="'familyName'" ></app-table-sort></th>
+                        <th><app-table-sort (click)="updateCharts(); isReordered=true" [table]="self" [page]="personPage" [label]="'Job Title'" [property]="'jobTitle'" ></app-table-sort></th>
+                        <th><app-table-sort (click)="updateCharts(); isReordered=true" [table]="self" [page]="personPage" [label]="'Company'" [property]="'company'" ></app-table-sort></th>
+                        <th><app-table-sort (click)="updateCharts(); isReordered=true" [table]="self" [page]="personPage" [label]="'Department'" [property]="'department'" ></app-table-sort></th> -->
+                        
+                        <!-- <th><app-table-sort (click)="updateCharts(); isReordered=true" [table]="self" [page]="personPage" [label]="'Comment'" [property]="'userComment'" ></app-table-sort></th> -->
+                        
+                        <!-- <th><app-table-sort (click)="updateCharts(); isReordered=true" [table]="self" [page]="personPage" [label]="'Password'" [property]="'userPassword'" ></app-table-sort></th> -->
+                        <th class="actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody [dragula]='"row-one"' [dragulaModel]='personPage.content' [ngClass]="{'minimize': isMinimized}">
+                    <!--<tr *ngFor="let user of personPage.content|filter:term:filterUser">-->
+                    <tr *ngFor="let user of personPage.content">
+                        <td *ngIf="user.person">Person</td>
+                        <td *ngIf="!user.person">Company</td>
+                        <td *ngIf="editable">
+                            <input  class="form-control"  #unme (keyup)="checkIfChange(unme, user)" type="text" [(ngModel)]="user.authUser.username" placeholder="username" />
+                        </td>
+                        <td *ngIf="editable">
+                            <select name="userType" id="userType" class="form-control"  [(ngModel)]="user.user.userType" #userType="ngModel" #uTyp (mouseup)="checkIfChange(uTyp, user)">
+                                <option *ngFor="let u of userTypes" [ngValue]="u">{{u.description}}</option>
+                            </select>
+                        </td>
+                        <ng-container *ngIf="!user.person">
+                            <td *ngIf="editable">
+                                <input class="form-control" #vnum (keyup)="checkIfChange(vnum, user)" type="text" [(ngModel)]="user.company.name" placeholder="Company Number" />
+                            </td>
+                            <td *ngIf="editable">
+                                <input class="form-control" #vnum (keyup)="checkIfChange(vnum, user)" type="text" [(ngModel)]="user.company.vatNumber" placeholder="Vat Number" />
+                            </td>
+                            <td  *ngIf="editable">
+                                <button class="btn btn-warning btn-xs" (click)="newCompany=user" data-toggle="modal" data-target="#add-department-modal">
+                                    <i class="fa-lg fa fa-plus-square" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                            <td  *ngIf="editable">N/A</td>
+                            <td  *ngIf="editable">N/A</td>
+                            <td  *ngIf="editable">N/A</td>
+                        </ng-container>
+                        <ng-container *ngIf="user.person">
+                            <td *ngIf="editable">
+                                <select id="company" class="form-control" name="company" [(ngModel)]="user.person.department.company" #company="ngModel" #comp (mouseup)="checkIfChange(comp, user)">
+                                    <option *ngFor="let c of companies" [ngValue]="c">{{c.name}}</option>
+                                </select>
+                            </td>
+                            <td *ngIf="editable">
+                                {{user.person.department.company.vatNumber}}
+                            </td>
+                            <td *ngIf="editable">
+                                <select id="department" class="form-control" name="department" [(ngModel)]="user.person.department" #department="ngModel" #dept (mouseup)="checkIfChange(dept, user)">
+                                    <option *ngFor="let d of depts" [ngValue]="d">
+                                    <!--<option *ngFor="let d of depts|filterDepts:user.person.department.company.id" [ngValue]="d">    -->
+                                        {{d.name}}
+                                    </option>
+                                </select>
+                            </td>
+                            <td *ngIf="editable">
+                                <input class="form-control" #frst (keyup)="checkIfChange(frst, user)" type="text" [(ngModel)]="user.person.forename" placeholder="forename" />
+                            </td>
+                            <td *ngIf="editable">
+                                <input class="form-control"  #lst (keyup)="checkIfChange(lst, user)" type="text" [(ngModel)]="user.person.givenName" placeholder="family name" />
+                            </td>
+                            <td *ngIf="editable">
+                                <input class="form-control"  #job (keyup)="checkIfChange(job, user)" type="text" [(ngModel)]="user.person.jobTitle" placeholder="job title" />
+                            </td>
+                            
+                        </ng-container>
+                        <!-- <td *ngIf="user.person">
+                            <input  class="form-control"  #comm (keyup)="checkIfChange(comm, person)" type="text" [(ngModel)]="person.userComment" placeholder="comment" />
+                        </td> -->
+                        
+                        <!-- <td *ngIf="user.person">
+                            <input  class="form-control"  #pss (keyup)="checkIfChange(pss, person)" type="text" [(ngModel)]="person.userPassword" placeholder="password" />
+                        </td> -->
+                        <td  (click)="toggleEditable(true)"  *ngIf="!editable">{{user.authUser.username}}</td>
+                        <td  (click)="toggleEditable(true)"  *ngIf="!editable">{{user.user.userType.description}}</td>
+                        <ng-container *ngIf="user.person">
+                            <td  (click)="toggleEditable(true)" *ngIf="!editable">{{user.person.department.company.name}}</td>
+                            <td  (click)="toggleEditable(true)" *ngIf="!editable">{{user.person.department.company.vatNumber}}</td>
+                            <td  (click)="toggleEditable(true)" *ngIf="!editable">{{user.person.department.name}}</td>
+                            <td  (click)="toggleEditable(true)" *ngIf="!editable">{{user.person.forename}}</td>
+                            <td  (click)="toggleEditable(true)" *ngIf="!editable">{{user.person.givenName}}</td>
+                            <td  (click)="toggleEditable(true)" *ngIf="!editable">{{user.person.jobTitle}}</td> 
+                        </ng-container>
+                        <ng-container *ngIf="!user.person">
+                            <td  (click)="toggleEditable(true)" *ngIf="!editable">{{user.company.name}}</td>
+                            <td  (click)="toggleEditable(true)" *ngIf="!editable">{{user.company.vatNumber}}</td>
+                            <td  (click)="toggleEditable(true)" *ngIf="!editable">N/A</td>
+                            <td  (click)="toggleEditable(true)" *ngIf="!editable">N/A</td>
+                            <td  (click)="toggleEditable(true)" *ngIf="!editable">N/A</td>
+                            <td  (click)="toggleEditable(true)" *ngIf="!editable">N/A</td>
+                        </ng-container>
+                        <!--  <td  (click)="toggleEditable(true)"  *ngIf="!user.person">{{person.userComment}}</td> -->
+                        
+                        <!-- <td  (click)="toggleEditable(true)"  *ngIf="!user.person">{{person.userPassword}}</td> -->
+                        <td class="handle">
+                            <button class="btn btn-danger btn-xs" (click)="currentPerson=user" data-toggle="modal" data-target="#delete-modal">
+                                <i class="fa-lg fa fa-trash-o" aria-hidden="true"></i>
+                            </button>
+                            <button class="btn btn-success btn-xs" (click)="viewId=user.user.id; isMinimized = !isMinimized">
+                                <i class="fa-lg fa fa-info-circle" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="row">
+                <button class="btn minimizer" (click)="isMinimized = !isMinimized">
+                    <ng-container *ngIf="isMinimized">
+                        <i class="fa fa-angle-double-down" aria-hidden="true"></i>
+                    </ng-container>
+                    <ng-container *ngIf="!isMinimized">
+                        <i class="fa fa-angle-double-up" aria-hidden="true"></i>
+                    </ng-container>
+                </button>
+            </div>
+            <!-- <table>
+                <tbody>
+                    <tr (click)="toggleEditable(false)">
+                        <td><input class="form-control" type="text" [(ngModel)]="newPerson.person.forename" placeholder="forename" /></td>
+                        <td><input class="form-control" type="text" [(ngModel)]="newPerson.person.familyName" placeholder="family name" /></td>
+                        <td><input class="form-control" type="text" [(ngModel)]="newPerson.person.jobTitle" placeholder="job title" /></td>
+                        <td>
+                            <select (ngModelChange)="setNewDept($event)" id="company" class="form-control" name="company" [(ngModel)]="newPerson.person.department.company" #company="ngModel" >
+                                <option *ngFor="let c of companies" [value]="c">{{c.name}}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select id="department" class="form-control" name="department" [(ngModel)]="newPerson.person.department" #department="ngModel">
+                                <option *ngFor="let d of newDept" [value]="d">{{d.name}}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="userType" id="userType" class="form-control"  [(ngModel)]="newPerson.user.userType" #userType="ngModel">
+                                <option *ngFor="let u of userTypes" [value]="u">{{u.description}}</option>
+                            </select>
+                        </td>
+                        <td><input class="form-control" type="text" [(ngModel)]="newPerson.userComment" placeholder="comment" /></td>
+                        <td><input class="form-control" type="text" [(ngModel)]="newPerson.userName" placeholder="username" /></td>
+                        <td><input class="form-control" type="text" [(ngModel)]="newPerson.userPassword" placeholder="password" /></td>
+                        <td class="actions">
+                            <button class="btn btn-default" (click)="add()">
+                                <i class="fa-lg fa fa-plus-square" aria-hidden="true"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>  -->
+        </div>
+        <!-- /#list -->
+
+        <app-table-pagination  (click)="updateCharts()" [table]="self" [page]="personPage" ></app-table-pagination>
+
+    </div>
+</div>
+</div>
+<ng-container *ngIf="viewId !=null">
+    <div class="col-md-11">
+        <app-person-edit  [userId]='viewId'></app-person-edit>
+    </div>
+    <div class="col-md-1">
+        <button  type="button" class="close" (click)="viewId=null; isMinimized = false" ><span>&times;</span></button>
+    </div>
+</ng-container>
+
+<!-- Modal Add Department-->
+<div class="modal fade" id="add-department-modal" role="dialog" aria-labelledby="modalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button  type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalLabel">Add Departments to {{newCompany.company.name}}</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" data-dismiss="modal">
+                    <i class="fa fa-times-circle" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Delete-->
+<div class="modal fade" id="delete-modal" role="dialog" aria-labelledby="modalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button  type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalLabel">Delete person</h4>
+            </div>
+            <div class="modal-body">
+                Do you want to remove this item ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" (click)="delete(currentPerson)" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Update -->
+<div class="modal fade" id="update-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalLabel">Table Updated</h4>
+            </div>
+            <div class="modal-body">
+                {{updated}} row(s) updated.
+            </div>
+            <div class="modal-footer">
+                <button  (onclick)="updated=0" type="button" class="btn btn-default" data-dismiss="modal" data-dismiss="modal">
+                    <i class="fa fa-times-circle" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 
+    <app-report-sheet [tableSize]="pageListSize" [tableData]="personPage.content"></app-report-sheet> -->
+    <button (click)="debug()" type="button" class="btn btn-warning">DEBUG_</button>
+</template>

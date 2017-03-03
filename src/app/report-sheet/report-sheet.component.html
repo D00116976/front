@@ -1,0 +1,23 @@
+<!-- ng2-chart 
+<div class="row">
+	<app-chart [data]="chartData" [labels]="chartLabels" [legend]="true" [type]="'bar'"></app-chart>
+	<app-chart [data]="locationData" [labels]="locationLabels" [legend]="true" [type]="'pie'"></app-chart>
+</div>-->
+
+<!-- <app-chart [data]="ageLocationData" [labels]="locationLabels" [legend]="true" [type]="'line'" [chartTypePicker]="true"></app-chart> -->
+
+<!-- angular2-highchart-->
+<div class="row">
+	<div class="col-md-6">
+		<app-hc-bar [data]="chartData" [labels]="chartLabels" [legend]="true"></app-hc-bar>  
+	</div>
+	<div class="col-md-6">
+		<app-hc-pie [data]="locationData" [labels]="locationLabels" [legend]="true"></app-hc-pie>
+	</div>
+</div>
+<!-- googlechart 
+<button (click)="viewCharts=!viewCharts">View Charts</button>
+<div *ngIf="viewCharts">
+	<app-google-pie-chart [title]="'Location'" [data]="locationData" [labels]="locationLabels"></app-google-pie-chart>
+</div>
+-->

@@ -1,0 +1,20 @@
+<h2>Project Creation</h2>
+<tabset>
+  <tab [ngSwitch]="tabz.id" *ngFor="let tabz of tabs"
+  [heading]="tabz.title"
+  [active]="tabz.active"
+  (select)="tabz.active = true"
+  (deselect)="tabz.active = false"
+  [disabled]="tabz.disabled"
+  [removable]="tabz.removable"
+  (removed)="removeTabHandler(tabz)"
+  [customClass]="tabz.customClass">
+  <app-project-creation-reports *ngSwitchCase="0" ></app-project-creation-reports>
+  <app-project-creation-add *ngSwitchCase="1" [tabIndex]="tabIndex" (tabChanged)="setActiveTab()"></app-project-creation-add>
+  <app-project-creation-edit [projectId]="1"  *ngSwitchCase="2"></app-project-creation-edit>
+  <app-project-creation-manage-tasks *ngSwitchCase="3"></app-project-creation-manage-tasks>
+  <app-project-creation-manage-teams *ngSwitchCase="4"></app-project-creation-manage-teams>
+  <app-project-creation-manage-project-teams *ngSwitchCase="5"></app-project-creation-manage-project-teams>
+  <app-project-creation-manage-schedule *ngSwitchCase="6"></app-project-creation-manage-schedule>
+</tab>
+</tabset>

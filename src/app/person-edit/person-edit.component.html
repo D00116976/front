@@ -1,0 +1,42 @@
+<ng-container *ngIf="userWrapper">
+	<div class="row">
+		<h3 class="page-header">{{userWrapper.user.name}}</h3>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<tabset>
+				<tab heading="User Details">
+					<ng-container *ngIf="isPerson">
+						<app-person-details [user]="userWrapper"></app-person-details>
+					</ng-container>
+				</tab>
+				<tab heading="Phone">
+					<h4 class="page-header">Phone Numbers</h4>
+				</tab>
+				<tab heading="Website">
+					<h4 class="page-header">Websites Addresses</h4>
+					
+				</tab>
+				<tab heading="FTP">
+					<h4 class="page-header">FTP Addresses</h4>
+					
+				</tab>
+				<tab heading="Email">
+					<h4 class="page-header">Email Addresses</h4>
+					
+				</tab>
+				<tab heading="Address">
+					<h4 class="page-header">Addresses</h4>
+				
+				</tab>
+				<tab heading="Bank Account">
+					<h4 class="page-header">Bank Accounts</h4>
+				
+				</tab>
+				<tab heading="Report">
+					
+				</tab>
+			</tabset>
+		</div>
+	</div>
+</ng-container>

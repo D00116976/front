@@ -1,0 +1,52 @@
+<table class="table table-striped" cellspacing="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				Has access to the System
+			</td>
+			<td>
+				<input id="access" class="" #sysa (keyup)="checkIfChange(sysa, role)" type="checkbox" [(ngModel)]="role.systemAccess" placeholder="SystemAccess" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				English
+			</td>
+			<td>
+				<input id="eng" class="" #reng (keyup)="checkIfChange(reng, role)" type="checkbox" [(ngModel)]="role.ROLE_BRANDT_ENG" placeholder="ROLE_BRANDT_ENG" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Project Manager
+			</td>
+			<td>
+				<input id="pm" class="" #rbpm (keyup)="checkIfChange(rbpm, role)" type="checkbox" [(ngModel)]="role.ROLE_BRANDT_PM" placeholder="ROLE_BRANDT_PM" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Administrator
+			</td>
+			<td>
+				<input id="admin" class="" #rbad (keyup)="checkIfChange(rbad, role)" type="checkbox" [(ngModel)]="role.ROLE_BRANDT_ADMIN" placeholder="ROLE_BRANDT_ADMIN" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Client
+			</td>
+			<td>
+				<input id="client" class="" #rcli (keyup)="checkIfChange(rcli, role)" type="checkbox" [(ngModel)]="role.ROLE_CLIENT" placeholder="ROLE_CLIENT" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Supplier
+			</td>
+			<td>
+				<input id="supplier" class="" #rsup (keyup)="checkIfChange(rsup, role)" type="checkbox" [(ngModel)]="role.ROLE_SUPPLIER" placeholder="ROLE_SUPPLIER" />
+			</td>
+		</tr>
+	</tbody>
+</table> 

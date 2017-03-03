@@ -1,0 +1,12 @@
+<label for="formType">Choose User type to add</label>
+<select name="formType" id="formType" class="form-control" required  [(ngModel)]="formType">
+	<option [value]="1">Person</option>
+	<option [value]="2">Company</option>
+</select>
+
+<ng-container *ngIf="formType==2"> 
+	
+ </ng-container>
+<ng-container *ngIf="formType==1">
+	<app-person-add></app-person-add>
+</ng-container> 
